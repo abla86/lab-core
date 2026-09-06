@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT || 3000);
+const host = process.env.HOST || "0.0.0.0";
+if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error("PORT must be an integer between 1 and 65535");
 const labs = [
   { id: "game", name: "GAME LAB", description: "10 engines · AI · systems" },
   { id: "evidence", name: "EVIDENCE LAB", description: "appraisal · synthesis" },
@@ -68,8 +70,8 @@ const server = http.createServer((req, res) => {
   return sendFile(res, url.pathname);
 });
 
-server.listen(port, "127.0.0.1", () => {
-  console.log(`LAB CORE listening on http://127.0.0.1:${port}`);
+server.listen(port, host, () => {
+  console.log(`LAB CORE listening on http://${host}:${port}`);
 });
 
 const shutdown = () => server.close(() => process.exit(0));
