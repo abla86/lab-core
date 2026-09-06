@@ -1,6 +1,7 @@
 const nodes=[...document.querySelectorAll('.node')];
 const feed=document.getElementById('feed');
 const selected=document.getElementById('selected');
+const apiBase='/api';
 const labels={
   game:'Interactive engines / Game Lab',
   evidence:'Evidence appraisal / Evidence Lab',
@@ -52,3 +53,20 @@ function draw(){
   ctx.beginPath();ctx.arc(cx,cy,105,0,Math.PI*2);ctx.strokeStyle='rgba(192,132,252,.12)';ctx.stroke();
 }
 addEventListener('resize',resize);resize();
+async function refreshBackendState(){
+  try {
+    const response=await fetch(apiBase+'/health',{headers:{Accept:'application/json'}});
+    if(!response.ok) throw new Error('Health request failed');
+    const health=await response.json();
+    const row=document.createElement('div');
+    const b=document.createElement('b'); b.textContent='API';
+    row.append(b, document.createTextNode(' '+health.status.toUpperCase()));
+    feed.prepend(row);
+  } catch {
+    const row=document.createElement('div');
+    const b=document.createElement('b'); b.textContent='API';
+    row.append(b, document.createTextNode(' UNAVAILABLE'));
+    feed.prepend(row);
+  }
+}
+refreshBackendState();
