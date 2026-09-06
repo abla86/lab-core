@@ -56,7 +56,10 @@ const server = http.createServer((req, res) => {
   } catch {
     return sendJson(res, 400, { error: "Bad request" });
   }
-  if (req.method !== "GET") return sendJson(res, 405, { error: "Method not allowed" });
+  if (req.method !== "GET") {
+    res.setHeader("Allow", "GET");
+    return sendJson(res, 405, { error: "Method not allowed" });
+  }
 
   if (url.pathname === "/api/health") {
     return sendJson(res, 200, { status: "healthy", service: "lab-core", timestamp: new Date().toISOString() });
