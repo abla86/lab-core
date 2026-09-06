@@ -2,10 +2,12 @@
   "name": "lab-core",
   "version": "1.0.0",
   "private": true,
+  "description": "Secure standalone LAB CORE frontend and backend hub",
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "node tests/api-test.mjs"
+    "test": "node tests/api-test.mjs",
+    "check": "node --check server.js && node --check js/lab-core.js && npm test"
   },
   "engines": {
     "node": ">=20"
