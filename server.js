@@ -30,7 +30,15 @@ function sendJson(res, status, payload) {
 function sendFile(res, pathname) {
   const requested = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
   const file = path.resolve(root, requested);
-  if (!file.startsWith(root + path.sep) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
+  let realFile;
+  try {
+    realFile = fs.realpathSync(file);
+  } catch {
+    sendJson(res, 404, { error: "Not found" });
+    return;
+  }
+  const realRoot = fs.realpathSync(root);
+  if (realFile !== realRoot && !realFile.startsWith(realRoot + path.sep) || !fs.statSync(realFile).isFile()) {
     sendJson(res, 404, { error: "Not found" });
     return;
   }
@@ -40,7 +48,12 @@ function sendFile(res, pathname) {
 }
 
 const server = http.createServer((req, res) => {
-  const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
+  let url;
+  try {
+    url = new URL(req.url ?? "/", "http://127.0.0.1");
+  } catch {
+    return sendJson(res, 400, { error: "Bad request" });
+  }
   if (req.method !== "GET") return sendJson(res, 405, { error: "Method not allowed" });
 
   if (url.pathname === "/api/health") {
@@ -58,3 +71,7 @@ const server = http.createServer((req, res) => {
 server.listen(port, "127.0.0.1", () => {
   console.log(`LAB CORE listening on http://127.0.0.1:${port}`);
 });
+
+const shutdown = () => server.close(() => process.exit(0));
+process.once("SIGINT", shutdown);
+process.once("SIGTERM", shutdown);
