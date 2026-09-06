@@ -26,3 +26,9 @@ jobs:
 
       - name: Verify
         run: npm run check
+
+      - name: Docker build
+        run: docker build --tag lab-core:ci .
+
+      - name: Compose validation
+        run: docker compose config
