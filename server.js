@@ -40,7 +40,13 @@ function sendFile(res, pathname) {
     sendJson(res, 404, { error: "Not found" });
     return;
   }
-  const realRoot = fs.realpathSync(root);
+  let realRoot;
+  try {
+    realRoot = fs.realpathSync(root);
+  } catch {
+    sendJson(res, 500, { error: "Internal server error" });
+    return;
+  }
   let stat;
   try {
     stat = fs.statSync(realFile);
@@ -53,6 +59,10 @@ function sendFile(res, pathname) {
     return;
   }
   const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8" };
+  if (!(path.extname(file) in types)) {
+    sendJson(res, 404, { error: "Not found" });
+    return;
+  }
   res.writeHead(200, { ...headers, "Content-Type": types[path.extname(file)] ?? "application/octet-stream" });
   const stream = fs.createReadStream(realFile);
   stream.on("error", () => {
