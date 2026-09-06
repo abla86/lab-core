@@ -3,9 +3,14 @@ import { spawn } from "node:child_process";
 
 const port = 3317;
 const child = spawn(process.execPath, ["server.js"], { env: { ...process.env, PORT: String(port) }, stdio: "ignore" });
+await new Promise((resolve, reject) => { child.once("spawn", resolve); child.once("error", reject); });
 
 try {
-  await new Promise(resolve => setTimeout(resolve, 250));
+  for (let attempt = 0; attempt < 20; attempt++) {
+    try { if ((await fetch(`http://127.0.0.1:${port}/api/health`)).ok) break; } catch {}
+    await new Promise(resolve => setTimeout(resolve, 50));
+    if (attempt === 19) throw new Error("Server did not become ready");
+  }
   for (const [path, check] of [
     ["/api/health", body => assert.equal(body.status, "healthy")],
     ["/api/info", body => assert.equal(body.labs, 6)],
@@ -21,5 +26,6 @@ try {
   assert.equal(missing.status, 404);
   console.log("LAB CORE API tests passed.");
 } finally {
-  child.kill();
+  child.kill("SIGTERM");
+  await new Promise(resolve => child.once("exit", resolve));
 }
