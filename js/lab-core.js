@@ -13,10 +13,16 @@ nodes.forEach(n=>n.addEventListener('click',()=>{
   nodes.forEach(x=>x.classList.remove('active')); n.classList.add('active');
   const key=n.dataset.lab;
   selected.textContent=labels[key];
-  const row=document.createElement('div');row.innerHTML='<b>ROUTE</b> '+key.toUpperCase()+' selected';feed.prepend(row);
+  const row=document.createElement('div');
+  const b=document.createElement('b'); b.textContent='ROUTE';
+  row.append(b, document.createTextNode(' '+key.toUpperCase()+' selected'));
+  feed.prepend(row);
 }));
 document.getElementById('ping').onclick=()=>{
-  const row=document.createElement('div');row.innerHTML='<b>NETWORK</b> HUB → NODES → ACK';feed.prepend(row);
+  const row=document.createElement('div');
+  const b=document.createElement('b'); b.textContent='NETWORK';
+  row.append(b, document.createTextNode(' HUB → NODES → ACK'));
+  feed.prepend(row);
 };
 document.getElementById('reset').onclick=()=>{
   nodes.forEach(x=>x.classList.remove('active'));
