@@ -18,16 +18,22 @@ nodes.forEach(n=>n.addEventListener('click',()=>{
   row.append(b, document.createTextNode(' '+key.toUpperCase()+' selected'));
   feed.prepend(row);
 }));
-document.getElementById('ping').onclick=()=>{
+document.getElementById('ping').addEventListener('click',()=>{
   const row=document.createElement('div');
   const b=document.createElement('b'); b.textContent='NETWORK';
   row.append(b, document.createTextNode(' HUB → NODES → ACK'));
   feed.prepend(row);
-};
-document.getElementById('reset').onclick=()=>{
+});
+document.getElementById('reset').addEventListener('click',()=>{
   nodes.forEach(x=>x.classList.remove('active'));
   selected.textContent='Velg en node for å inspisere forbindelsen.';
-  feed.innerHTML='<div><b>CORE</b> ready</div><div><b>ROUTES</b> 6 registered</div><div><b>STATE</b> listening</div>';
+  feed.replaceChildren();
+  for (const [label, message] of [['CORE','ready'],['ROUTES','6 registered'],['STATE','listening']]) {
+    const row=document.createElement('div');
+    const b=document.createElement('b'); b.textContent=label;
+    row.append(b, document.createTextNode(' '+message));
+    feed.append(row);
+  }
 };
 
 const canvas=document.getElementById('network'),ctx=canvas.getContext('2d');
