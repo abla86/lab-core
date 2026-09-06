@@ -37,6 +37,7 @@ try {
   assert.equal(missing.status, 404);
   const method = await fetch(`http://127.0.0.1:${port}/api/health`, { method: "POST" });
   assert.equal(method.status, 405);
+  assert.equal(method.headers.get("allow"), "GET");
   console.log("LAB CORE API tests passed.");
 } finally {
   child.kill("SIGTERM");
