@@ -22,8 +22,21 @@ try {
     assert.equal(response.headers.get("x-content-type-options"), "nosniff");
     check(await response.json());
   }
+  const page = await fetch(`http://127.0.0.1:${port}/`);
+  assert.equal(page.status, 200);
+  assert.match(await page.text(), /LAB CORE/);
+  assert.equal(page.headers.get("x-content-type-options"), "nosniff");
+  assert.match(page.headers.get("content-security-policy"), /script-src 'self'/);
+
+  for (const asset of ["/css/lab-core.css", "/js/lab-core.js"]) {
+    const response = await fetch(`http://127.0.0.1:${port}${asset}`);
+    assert.equal(response.status, 200);
+  }
+
   const missing = await fetch(`http://127.0.0.1:${port}/does-not-exist`);
   assert.equal(missing.status, 404);
+  const method = await fetch(`http://127.0.0.1:${port}/api/health`, { method: "POST" });
+  assert.equal(method.status, 405);
   console.log("LAB CORE API tests passed.");
 } finally {
   child.kill("SIGTERM");
