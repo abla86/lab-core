@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const root = path.dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT || 3000);
 const host = process.env.HOST || "0.0.0.0";
+if (!host.trim()) throw new Error("HOST must not be empty");
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error("PORT must be an integer between 1 and 65535");
 const labs = [
   { id: "game", name: "GAME LAB", description: "10 engines · AI · systems" },
@@ -46,7 +47,12 @@ function sendFile(res, pathname) {
   }
   const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8" };
   res.writeHead(200, { ...headers, "Content-Type": types[path.extname(file)] ?? "application/octet-stream" });
-  fs.createReadStream(file).pipe(res);
+  const stream = fs.createReadStream(realFile);
+  stream.on("error", () => {
+    if (!res.headersSent) sendJson(res, 500, { error: "Internal server error" });
+    else res.destroy();
+  });
+  stream.pipe(res);
 }
 
 const server = http.createServer((req, res) => {
