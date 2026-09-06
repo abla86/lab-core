@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const port = 33000 + (process.pid % 1000);
 const child = spawn(process.execPath, ["server.js"], { cwd: fileURLToPath(new URL("..", import.meta.url)), env: { ...process.env, PORT: String(port) }, stdio: "ignore" });
+child.on("error", error => { throw error; });
 await new Promise((resolve, reject) => { child.once("spawn", resolve); child.once("error", reject); });
 
 try {
@@ -34,7 +35,7 @@ try {
     assert.equal(response.status, 200);
   }
 
-  const traversal = await fetch(`http://127.0.0.1:${port}/../server.js`);
+  const traversal = await fetch(`http://127.0.0.1:${port}/%2e%2e/server.js`);
   assert.equal(traversal.status, 404);
   const missing = await fetch(`http://127.0.0.1:${port}/does-not-exist`);
   assert.equal(missing.status, 404);
@@ -45,6 +46,6 @@ try {
   assert.equal(method.headers.get("cache-control"), "no-store");
   console.log("LAB CORE API tests passed.");
 } finally {
-  child.kill("SIGTERM");
+  if (!child.killed) child.kill("SIGTERM");
   await new Promise(resolve => child.once("exit", resolve));
 }
