@@ -38,7 +38,7 @@ function sendFile(res, pathname) {
     return;
   }
   const realRoot = fs.realpathSync(root);
-  if (realFile !== realRoot && !realFile.startsWith(realRoot + path.sep) || !fs.statSync(realFile).isFile()) {
+  if ((realFile !== realRoot && !realFile.startsWith(realRoot + path.sep)) || !fs.statSync(realFile).isFile()) {
     sendJson(res, 404, { error: "Not found" });
     return;
   }
