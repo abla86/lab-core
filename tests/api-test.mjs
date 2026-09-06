@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 
-const port = 3317;
-const child = spawn(process.execPath, ["server.js"], { env: { ...process.env, PORT: String(port) }, stdio: "ignore" });
+const port = 33000 + (process.pid % 1000);
+const child = spawn(process.execPath, ["server.js"], { cwd: new URL("..", import.meta.url), env: { ...process.env, PORT: String(port) }, stdio: "ignore" });
 await new Promise((resolve, reject) => { child.once("spawn", resolve); child.once("error", reject); });
 
 try {
