@@ -34,11 +34,15 @@ try {
     assert.equal(response.status, 200);
   }
 
+  const traversal = await fetch(`http://127.0.0.1:${port}/../server.js`);
+  assert.equal(traversal.status, 404);
   const missing = await fetch(`http://127.0.0.1:${port}/does-not-exist`);
   assert.equal(missing.status, 404);
   const method = await fetch(`http://127.0.0.1:${port}/api/health`, { method: "POST" });
   assert.equal(method.status, 405);
   assert.equal(method.headers.get("allow"), "GET");
+  assert.equal(method.headers.get("x-content-type-options"), "nosniff");
+  assert.equal(method.headers.get("cache-control"), "no-store");
   console.log("LAB CORE API tests passed.");
 } finally {
   child.kill("SIGTERM");
