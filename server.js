@@ -74,6 +74,7 @@ const server = http.createServer((req, res) => {
     return sendJson(res, 405, { error: "Method not allowed" });
   }
 
+  res.setHeader("X-Powered-By", "");
   if (url.pathname === "/api/health") {
     return sendJson(res, 200, { status: "healthy", service: "lab-core", timestamp: new Date().toISOString() });
   }
