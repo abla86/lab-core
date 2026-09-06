@@ -36,7 +36,9 @@ document.getElementById('reset').addEventListener('click',()=>{
   }
 };
 
-const canvas=document.getElementById('network'),ctx=canvas.getContext('2d');
+const canvas=document.getElementById('network');
+const ctx=canvas.getContext('2d');
+if (!ctx) throw new Error('Canvas 2D context is unavailable');
 function resize(){canvas.width=canvas.clientWidth*devicePixelRatio;canvas.height=canvas.clientHeight*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);draw()}
 function draw(){
   const r=canvas.getBoundingClientRect(),cx=r.width/2,cy=r.height/2;
