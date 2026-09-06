@@ -22,3 +22,4 @@
     .side{padding:18px}.side h2{margin-top:0}.feed{display:grid;gap:8px}.feed div{padding:9px;background:#090611;border:1px solid #1b112a;border-radius:8px;font:11px ui-monospace,monospace}.feed b{color:var(--cyan)}
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.actions button{padding:10px 13px;border-radius:9px;border:1px solid var(--line);background:#130b20;color:var(--text);cursor:pointer}.actions button:hover{border-color:var(--purple)}
     @media(max-width:900px){.core{grid-template-columns:1fr}.network{min-height:600px}.node{width:130px}.hub{width:150px;height:150px}}
+.selected{color:var(--muted);font-size:12px;margin-top:16px}
