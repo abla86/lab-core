@@ -35,7 +35,7 @@ document.getElementById('reset').addEventListener('click',()=>{
     row.append(b, document.createTextNode(' '+message));
     feed.append(row);
   }
-};
+});
 
 const canvas=document.getElementById('network');
 const ctx=canvas.getContext('2d');
