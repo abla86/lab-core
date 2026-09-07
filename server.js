@@ -74,8 +74,12 @@ function sendFile(res, pathname) {
 
 const server = http.createServer((req, res) => {
   let url;
+  const rawUrl = req.url ?? "/";
+  if (/%2e/i.test(rawUrl) || /%2f/i.test(rawUrl) || /%5c/i.test(rawUrl)) {
+    return sendJson(res, 404, { error: "Not found" });
+  }
   try {
-    url = new URL(req.url ?? "/", "http://127.0.0.1");
+    url = new URL(rawUrl, "http://127.0.0.1");
   } catch {
     return sendJson(res, 400, { error: "Bad request" });
   }
