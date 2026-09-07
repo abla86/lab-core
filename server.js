@@ -81,6 +81,8 @@ const server = http.createServer((req, res) => {
   if (/%(?:2e|2f|5c)/i.test(rawPath)) {
     return sendJson(res, 404, { error: "Not found" });
   }
+  // WHATWG URL parsing can normalize dot-segments, so reject any decoded
+  // traversal before handing the path to the filesystem.
   let decodedPath;
   try {
     decodedPath = decodeURIComponent(rawPath);
