@@ -75,7 +75,17 @@ function sendFile(res, pathname) {
 const server = http.createServer((req, res) => {
   let url;
   const rawUrl = req.url ?? "/";
-  if (/%2e/i.test(rawUrl) || /%2f/i.test(rawUrl) || /%5c/i.test(rawUrl)) {
+  // Reject encoded traversal/separator forms before URL parsing/normalization.
+  if (/%(?:2e|2f|5c)/i.test(rawUrl)) {
+    return sendJson(res, 404, { error: "Not found" });
+  }
+  let decodedPath;
+  try {
+    decodedPath = decodeURIComponent(rawUrl.split("?")[0]);
+  } catch {
+    return sendJson(res, 400, { error: "Bad request" });
+  }
+  if (decodedPath.includes("\\") || decodedPath.split("/").includes("..")) {
     return sendJson(res, 404, { error: "Not found" });
   }
   try {
