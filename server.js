@@ -75,13 +75,15 @@ function sendFile(res, pathname) {
 const server = http.createServer((req, res) => {
   let url;
   const rawUrl = req.url ?? "/";
-  // Reject encoded traversal/separator forms before URL parsing/normalization.
-  if (/%(?:2e|2f|5c)/i.test(rawUrl)) {
+  // Node's URL parser normalizes encoded dot-segments, so inspect the raw
+  // request target before parsing to prevent traversal from becoming "/".
+  const rawPath = rawUrl.split("?")[0];
+  if (/%(?:2e|2f|5c)/i.test(rawPath)) {
     return sendJson(res, 404, { error: "Not found" });
   }
   let decodedPath;
   try {
-    decodedPath = decodeURIComponent(rawUrl.split("?")[0]);
+    decodedPath = decodeURIComponent(rawPath);
   } catch {
     return sendJson(res, 400, { error: "Bad request" });
   }
