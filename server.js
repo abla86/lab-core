@@ -81,16 +81,13 @@ const server = http.createServer((req, res) => {
   if (/%(?:2e|2f|5c)/i.test(rawPath)) {
     return sendJson(res, 404, { error: "Not found" });
   }
-  // WHATWG URL parsing can normalize dot-segments, so reject any decoded
-  // traversal before handing the path to the filesystem.
-  let decodedPath;
   try {
-    decodedPath = decodeURIComponent(rawPath);
+    const decodedPath = decodeURIComponent(rawPath);
+    if (decodedPath.includes("\\") || decodedPath.split("/").includes("..")) {
+      return sendJson(res, 404, { error: "Not found" });
+    }
   } catch {
     return sendJson(res, 400, { error: "Bad request" });
-  }
-  if (decodedPath.includes("\\") || decodedPath.split("/").includes("..")) {
-    return sendJson(res, 404, { error: "Not found" });
   }
   try {
     url = new URL(rawUrl, "http://127.0.0.1");
